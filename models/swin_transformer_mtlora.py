@@ -8,9 +8,8 @@
 import torch
 from torch import Tensor
 import torch.nn as nn
-import torch.utils.checkpoint as checkpoint
 from timm.models.layers import DropPath, to_2tuple, trunc_normal_
-from models.lora import MTLoRALinear, MTLoRAQKV
+from models.lora import MTLoRALinear
 
 try:
     import os
@@ -24,10 +23,6 @@ except:
     WindowProcess = None
     WindowProcessReverse = None
     print("[Warning] Fused window process have not been installed. Please refer to get_started.md for installation.")
-
-lora_all_window_attenions = True
-
-# Wrapper around nn.linear
 
 
 class CompatLinear(nn.Linear):
@@ -45,7 +40,7 @@ class Mlp(nn.Module):
         hidden_features = hidden_features or in_features
 
         if mtlora.FC1_ENABLED:
-            self.fc1 = MTLoRALinear(in_features, hidden_features, r=mtlora.R_PER_TASK_LIST[layer_idx] if (lora or lora_all_window_attenions) else 0,
+            self.fc1 = MTLoRALinear(in_features, hidden_features, r=mtlora.R_PER_TASK_LIST[layer_idx] if lora else 0,
                                     lora_shared_scale=mtlora.SHARED_SCALE[layer_idx], lora_task_scale=mtlora.SCALE_PER_TASK_LIST[layer_idx], lora_dropout=mtlora.DROPOUT[layer_idx], tasks=(
                                         tasks if (lora or mtlora.INTERMEDIATE_SPECIALIZATION) else None),
                                     trainable_scale_shared=mtlora.TRAINABLE_SCALE_SHARED, trainable_scale_per_task=mtlora.TRAINABLE_SCALE_PER_TASK, shared_mode=mtlora.SHARED_MODE)
@@ -53,7 +48,7 @@ class Mlp(nn.Module):
             self.fc1 = CompatLinear(in_features, hidden_features)
         self.act = act_layer()
         if mtlora.FC2_ENABLED:
-            self.fc2 = MTLoRALinear(hidden_features, out_features, r=mtlora.R_PER_TASK_LIST[layer_idx] if (lora or lora_all_window_attenions) else 0,
+            self.fc2 = MTLoRALinear(hidden_features, out_features, r=mtlora.R_PER_TASK_LIST[layer_idx] if lora else 0,
                                     lora_shared_scale=mtlora.SHARED_SCALE[layer_idx], lora_task_scale=mtlora.SCALE_PER_TASK_LIST[layer_idx], lora_dropout=mtlora.DROPOUT[layer_idx], tasks=(
                                         tasks if (lora or mtlora.INTERMEDIATE_SPECIALIZATION) else None),
                                     trainable_scale_shared=mtlora.TRAINABLE_SCALE_SHARED, trainable_scale_per_task=mtlora.TRAINABLE_SCALE_PER_TASK, shared_mode=mtlora.SHARED_MODE)
@@ -157,7 +152,7 @@ class WindowAttention(nn.Module):
         self.register_buffer("relative_position_index",
                              relative_position_index)
         if mtlora.QKV_ENABLED:
-            self.qkv = MTLoRALinear(dim, dim * 3, r=mtlora.R_PER_TASK_LIST[layer_idx] if (lora or lora_all_window_attenions) else 0,
+            self.qkv = MTLoRALinear(dim, dim * 3, r=mtlora.R_PER_TASK_LIST[layer_idx] if lora else 0,
                                     lora_shared_scale=mtlora.SHARED_SCALE[layer_idx], lora_task_scale=mtlora.SCALE_PER_TASK_LIST[layer_idx], lora_dropout=mtlora.DROPOUT[layer_idx], tasks=None, bias=qkv_bias,
                                     trainable_scale_shared=mtlora.TRAINABLE_SCALE_SHARED, trainable_scale_per_task=mtlora.TRAINABLE_SCALE_PER_TASK, shared_mode=mtlora.SHARED_MODE)
         else:
@@ -165,7 +160,7 @@ class WindowAttention(nn.Module):
         self.attn_drop = nn.Dropout(attn_drop)
 
         if mtlora.PROJ_ENABLED:
-            self.proj = MTLoRALinear(dim, dim, r=mtlora.R_PER_TASK_LIST[layer_idx] if (lora or lora_all_window_attenions) else 0,
+            self.proj = MTLoRALinear(dim, dim, r=mtlora.R_PER_TASK_LIST[layer_idx] if lora else 0,
                                      lora_shared_scale=mtlora.SHARED_SCALE[layer_idx], lora_task_scale=mtlora.SCALE_PER_TASK_LIST[layer_idx], lora_dropout=mtlora.DROPOUT[layer_idx], tasks=(
                 tasks if (lora or mtlora.INTERMEDIATE_SPECIALIZATION) else None),
                 trainable_scale_shared=mtlora.TRAINABLE_SCALE_SHARED, trainable_scale_per_task=mtlora.TRAINABLE_SCALE_PER_TASK, shared_mode=mtlora.SHARED_MODE)
@@ -536,9 +531,6 @@ class BasicLayer(nn.Module):
 
     def forward(self, x):
         for blk in self.blocks:
-            # if self.use_checkpoint:
-            #     x, tasks_lora = checkpoint.checkpoint(blk, x)
-            # else:
             x, tasks_lora = blk(x)
         if self.downsample is not None:
             x = self.downsample(x)
@@ -659,7 +651,6 @@ class SwinTransformerMTLoRA(nn.Module):
         if mtlora is not None:
             print("\nMTLoRA params:")
             print(mtlora)
-            print(f"lora_all_window_attenions: {lora_all_window_attenions}\n")
 
         # split image into non-overlapping patches
         self.patch_embed = PatchEmbed(
@@ -705,7 +696,6 @@ class SwinTransformerMTLoRA(nn.Module):
                                 layer_idx=i_layer)
             self.layers.append(layer)
 
-        # self.norm = norm_layer(self.num_features)
         self.avgpool = nn.AdaptiveAvgPool1d(1)
         self.head = nn.Linear(
             self.num_features, num_classes) if num_classes > 0 else nn.Identity()

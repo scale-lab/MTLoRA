@@ -600,7 +600,6 @@ class SwinTransformer(nn.Module):
                                 fused_window_process=fused_window_process)
             self.layers.append(layer)
 
-        # self.norm = norm_layer(self.num_features)
         self.avgpool = nn.AdaptiveAvgPool1d(1)
         self.head = nn.Linear(
             self.num_features, num_classes) if num_classes > 0 else nn.Identity()
@@ -635,8 +634,6 @@ class SwinTransformer(nn.Module):
             x = layer(x)
             if return_stages:
                 out.append(x)
-        # if not return_stages:
-            # x = self.norm(x)  # B L C
         if flatten_ft:
             x = self.avgpool(x.transpose(1, 2))  # B C 1
             x = torch.flatten(x, 1)
