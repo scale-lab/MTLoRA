@@ -1,0 +1,42 @@
+DATA:
+  IMG_SIZE: 448
+MODEL:
+  TYPE: swin
+  NAME: mtlora_tiny_448_r32_scale4_pertask
+  DROP_PATH_RATE: 0.2
+  SWIN:
+    EMBED_DIM: 96
+    DEPTHS: [2, 2, 6, 2]
+    NUM_HEADS: [3, 6, 12, 24]
+    WINDOW_SIZE: 7
+  MTLORA:
+    ENABLED: True
+    R: [32, 32, 32, 32]
+    SHARED_SCALE: [4.0]
+    TASK_SCALE: [4.0]
+    DROPOUT: [0.05, 0.05, 0.05, 0.05]
+    TRAINABLE_SCALE_SHARED: False
+    TRAINABLE_SCALE_PER_TASK: False
+    INTERMEDIATE_SPECIALIZATION: False
+    FREEZE_PRETRAINED: True
+    SPLIT_QKV: False
+    QKV_ENABLED: True
+    PROJ_ENABLED: True
+    FC1_ENABLED: True
+    FC2_ENABLED: True
+    DOWNSAMPLER_ENABLED: False
+    R_PER_TASK:
+      semseg: [4]
+      normals: [4]
+      sal: [4]
+      human_parts: [4]
+      edge: [4]
+      depth: [4]
+      shared: [32]
+  DECODER_HEAD:
+    semseg: hrnet
+    normals: hrnet
+    sal: hrnet
+    human_parts: hrnet
+    edge: hrnet
+    depth: hrnet
