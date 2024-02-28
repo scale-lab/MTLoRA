@@ -43,9 +43,9 @@ If you find MTLoRA helpful in your research, please cite our paper:
 @inproceedings{agiza2023mtlora,
   title={MTLoRA: A Low-Rank Adaptation Approach for Efficient Multi-Task Learning},
   author={Agiza, Ahmeda and Neseem, Marina and Reda, Sherief},
-  booktitle={},
+  booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition},
   pages={},
-  year={2023}
+  year={2024}
 }
 ```
 
