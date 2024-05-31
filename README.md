@@ -40,7 +40,7 @@ Since the release commit is squashed, the GitHub contributors tab doesn't reflec
 ## Citation
 If you find MTLoRA helpful in your research, please cite our paper:
 ```
-@inproceedings{agiza2023mtlora,
+@inproceedings{agiza2024mtlora,
   title={MTLoRA: A Low-Rank Adaptation Approach for Efficient Multi-Task Learning},
   author={Agiza, Ahmed and Neseem, Marina and Reda, Sherief},
   booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition},
