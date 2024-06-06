@@ -24,8 +24,8 @@ Running MTLoRA code, is very simmilar to Swin's codebase:
     - Install dependencies: `pip install -r requirements.txt`
 
 3. **Run the code**
-        ```
-        python main.py --cfg configs/mtlora/tiny_448/<config>.yaml --pascal <path to pascal database> --tasks semseg,normals,sal,human_parts --batch-size <batch size> --ckpt-freq=20 --epoch=<num epochs> --resume-backbone <path to the weights of the chosen Swin variant>
+        ```python
+        python -m torch.distributed.launch --nproc_per_node 1 --master_port 12345 main.py --cfg configs/mtlora/tiny_448/<config>.yaml --pascal <path to pascal database> --tasks semseg,normals,sal,human_parts --batch-size <batch size> --ckpt-freq=20 --epoch=<num epochs> --resume-backbone <path to the weights of the chosen Swin variant>
         ```
 
   Swin variants and their weights can be found at the official [Swin Transformer repository](https://github.com/microsoft/Swin-Transformer). 

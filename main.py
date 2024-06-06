@@ -264,7 +264,6 @@ def main(config):
                       if p.requires_grad and 'lora' in name)
     total_model_params = sum(p.numel() for p in model.parameters())
     total_model_params_without_lora = total_model_params - lora_params
-    # number of params that are not not in the backbone
     decoder_params = sum(p.numel() for name, p in model.named_parameters()
                          if 'backbone' not in name)
 

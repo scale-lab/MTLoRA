@@ -40,7 +40,7 @@ class Mlp(nn.Module):
         hidden_features = hidden_features or in_features
 
         if mtlora.FC1_ENABLED:
-            self.fc1 = MTLoRALinear(in_features, hidden_features, r=mtlora.R_PER_TASK_LIST[layer_idx] if lora else 0,
+            self.fc1 = MTLoRALinear(in_features, hidden_features, r=mtlora.R_PER_TASK_LIST[layer_idx],
                                     lora_shared_scale=mtlora.SHARED_SCALE[layer_idx], lora_task_scale=mtlora.SCALE_PER_TASK_LIST[layer_idx], lora_dropout=mtlora.DROPOUT[layer_idx], tasks=(
                                         tasks if (lora or mtlora.INTERMEDIATE_SPECIALIZATION) else None),
                                     trainable_scale_shared=mtlora.TRAINABLE_SCALE_SHARED, trainable_scale_per_task=mtlora.TRAINABLE_SCALE_PER_TASK, shared_mode=mtlora.SHARED_MODE)
@@ -48,7 +48,7 @@ class Mlp(nn.Module):
             self.fc1 = CompatLinear(in_features, hidden_features)
         self.act = act_layer()
         if mtlora.FC2_ENABLED:
-            self.fc2 = MTLoRALinear(hidden_features, out_features, r=mtlora.R_PER_TASK_LIST[layer_idx] if lora else 0,
+            self.fc2 = MTLoRALinear(hidden_features, out_features, r=mtlora.R_PER_TASK_LIST[layer_idx],
                                     lora_shared_scale=mtlora.SHARED_SCALE[layer_idx], lora_task_scale=mtlora.SCALE_PER_TASK_LIST[layer_idx], lora_dropout=mtlora.DROPOUT[layer_idx], tasks=(
                                         tasks if (lora or mtlora.INTERMEDIATE_SPECIALIZATION) else None),
                                     trainable_scale_shared=mtlora.TRAINABLE_SCALE_SHARED, trainable_scale_per_task=mtlora.TRAINABLE_SCALE_PER_TASK, shared_mode=mtlora.SHARED_MODE)
@@ -151,8 +151,9 @@ class WindowAttention(nn.Module):
         relative_position_index = relative_coords.sum(-1)  # Wh*Ww, Wh*Ww
         self.register_buffer("relative_position_index",
                              relative_position_index)
+
         if mtlora.QKV_ENABLED:
-            self.qkv = MTLoRALinear(dim, dim * 3, r=mtlora.R_PER_TASK_LIST[layer_idx] if lora else 0,
+            self.qkv = MTLoRALinear(dim, dim * 3, r=mtlora.R_PER_TASK_LIST[layer_idx],
                                     lora_shared_scale=mtlora.SHARED_SCALE[layer_idx], lora_task_scale=mtlora.SCALE_PER_TASK_LIST[layer_idx], lora_dropout=mtlora.DROPOUT[layer_idx], tasks=None, bias=qkv_bias,
                                     trainable_scale_shared=mtlora.TRAINABLE_SCALE_SHARED, trainable_scale_per_task=mtlora.TRAINABLE_SCALE_PER_TASK, shared_mode=mtlora.SHARED_MODE)
         else:
@@ -160,7 +161,7 @@ class WindowAttention(nn.Module):
         self.attn_drop = nn.Dropout(attn_drop)
 
         if mtlora.PROJ_ENABLED:
-            self.proj = MTLoRALinear(dim, dim, r=mtlora.R_PER_TASK_LIST[layer_idx] if lora else 0,
+            self.proj = MTLoRALinear(dim, dim, r=mtlora.R_PER_TASK_LIST[layer_idx],
                                      lora_shared_scale=mtlora.SHARED_SCALE[layer_idx], lora_task_scale=mtlora.SCALE_PER_TASK_LIST[layer_idx], lora_dropout=mtlora.DROPOUT[layer_idx], tasks=(
                 tasks if (lora or mtlora.INTERMEDIATE_SPECIALIZATION) else None),
                 trainable_scale_shared=mtlora.TRAINABLE_SCALE_SHARED, trainable_scale_per_task=mtlora.TRAINABLE_SCALE_PER_TASK, shared_mode=mtlora.SHARED_MODE)
