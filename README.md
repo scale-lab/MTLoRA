@@ -24,13 +24,22 @@ Running MTLoRA code, is very simmilar to Swin's codebase:
     - Install dependencies: `pip install -r requirements.txt`
 
 3. **Run the code**
-        ```python
-        python -m torch.distributed.launch --nproc_per_node 1 --master_port 12345 main.py --cfg configs/mtlora/tiny_448/<config>.yaml --pascal <path to pascal database> --tasks semseg,normals,sal,human_parts --batch-size <batch size> --ckpt-freq=20 --epoch=<num epochs> --resume-backbone <path to the weights of the chosen Swin variant>
-        ```
+    ```python
+    python -m torch.distributed.launch --nproc_per_node 1 --master_port 12345 main.py --cfg configs/mtlora/tiny_448/<config>.yaml --pascal <path to pascal database> --tasks semseg,normals,sal,human_parts --batch-size 32 --ckpt-freq=20 --epoch=300 --resume-backbone <path to the weights of the chosen Swin variant>
+    ```
 
   Swin variants and their weights can be found at the official [Swin Transformer repository](https://github.com/microsoft/Swin-Transformer). 
   
   The outputs will be saved in `output/` folder unless overridden by the argument `--output`.
+
+4. **Using pre-trained model**
+
+    You can download the model weights from the following [link](https://drive.google.com/file/d/1AzzOgX6X0VFKyXUBXhwlgmba5NbPUq3m/view?usp=drive_link)
+
+    To run and evaluate the pre-trained model (assuming the model weight file is at `./mtlora.pth`), use `--eval` and `--resume <checkpoint>` as follows:
+    ```python
+    python -m torch.distributed.launch --nproc_per_node 1 --master_port 12345 main.py --cfg configs/mtlora/tiny_448/mtlora_tiny_448_r64_scale4_pertask.yaml --pascal <path to pascal database> --tasks semseg,normals,sal,human_parts --batch-size 32 --resume ./mtlora.pth --eval
+    ```
   
 ## Authorship
 Since the release commit is squashed, the GitHub contributors tab doesn't reflect the authors' contributions. The following authors contributed equally to this codebase:
@@ -41,10 +50,10 @@ Since the release commit is squashed, the GitHub contributors tab doesn't reflec
 If you find MTLoRA helpful in your research, please cite our paper:
 ```
 @inproceedings{agiza2024mtlora,
-  title={MTLoRA: A Low-Rank Adaptation Approach for Efficient Multi-Task Learning},
+  title={MTLoRA: Low-Rank Adaptation Approach for Efficient Multi-Task Learning},
   author={Agiza, Ahmed and Neseem, Marina and Reda, Sherief},
   booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition},
-  pages={},
+  pages={16196--16205},
   year={2024}
 }
 ```
