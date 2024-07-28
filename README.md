@@ -27,12 +27,11 @@ Running MTLoRA code, is very simmilar to Swin's codebase:
     ```python
     python -m torch.distributed.launch --nproc_per_node 1 --master_port 12345 main.py --cfg configs/mtlora/tiny_448/<config>.yaml --pascal <path to pascal database> --tasks semseg,normals,sal,human_parts --batch-size 32 --ckpt-freq=20 --epoch=300 --resume-backbone <path to the weights of the chosen Swin variant>
     ```
-
-  Swin variants and their weights can be found at the official [Swin Transformer repository](https://github.com/microsoft/Swin-Transformer). 
+    Swin variants and their weights can be found at the official [Swin Transformer repository](https://github.com/microsoft/Swin-Transformer). 
   
-  The outputs will be saved in `output/` folder unless overridden by the argument `--output`.
+    The outputs will be saved in `output/` folder unless overridden by the argument `--output`.
 
-4. **Using pre-trained model**
+4. **Using the pre-trained model**
 
     You can download the model weights from the following [link](https://drive.google.com/file/d/1AzzOgX6X0VFKyXUBXhwlgmba5NbPUq3m/view?usp=drive_link).
 
