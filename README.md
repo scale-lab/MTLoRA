@@ -34,7 +34,7 @@ Running MTLoRA code, is very simmilar to Swin's codebase:
 
 4. **Using pre-trained model**
 
-    You can download the model weights from the following [link](https://drive.google.com/file/d/1AzzOgX6X0VFKyXUBXhwlgmba5NbPUq3m/view?usp=drive_link)
+    You can download the model weights from the following [link](https://drive.google.com/file/d/1AzzOgX6X0VFKyXUBXhwlgmba5NbPUq3m/view?usp=drive_link).
 
     To run and evaluate the pre-trained model (assuming the model weight file is at `./mtlora.pth`), use `--eval` and `--resume <checkpoint>` as follows:
     ```python
