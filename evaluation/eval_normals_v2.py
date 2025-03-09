@@ -1,10 +1,14 @@
-# This code is referenced from
-# https://github.com/facebookresearch/astmt/
+# --------------------------------------------------------
+# MTLoRA
+# GitHub: https://github.com/scale-lab/MTLoRA
 #
+# Original file:
+# License: Attribution-NonCommercial 4.0 International (https://github.com/facebookresearch/astmt/)
 # Copyright (c) Facebook, Inc. and its affiliates.
-# All rights reserved.
 #
-# License: Attribution-NonCommercial 4.0 International
+# Modifications:
+# Copyright (c) 2024 SCALE Lab, Brown University
+# Licensed under the MIT License (see LICENSE for details)
 
 import torch
 

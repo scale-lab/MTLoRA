@@ -1,6 +1,15 @@
+# --------------------------------------------------------
+# MTLoRA
+# GitHub: https://github.com/scale-lab/MTLoRA
 #
-# Authors: Simon Vandenhende
+# Original file:
 # Licensed under the CC BY-NC 4.0 license (https://creativecommons.org/licenses/by-nc/4.0/)
+# Written by Simon Vandenhende
+#
+# Modifications:
+# Copyright (c) 2024 SCALE Lab, Brown University
+# Licensed under the MIT License (see LICENSE for details)
+# --------------------------------------------------------
 
 import os
 import numpy as np
@@ -36,7 +45,7 @@ class PerformanceMeter(object):
         self.database = db_name
         self.tasks = config.TASKS
         self.meters = {t: get_single_task_meter(config,
-            t, self.database) for t in self.tasks}
+                                                t, self.database) for t in self.tasks}
 
     def reset(self):
         for t in self.tasks:
@@ -55,7 +64,7 @@ class PerformanceMeter(object):
 
 
 def calculate_multi_task_performance(eval_dict, single_task_dict):
-    assert(set(eval_dict.keys()) == set(single_task_dict.keys()))
+    assert (set(eval_dict.keys()) == set(single_task_dict.keys()))
     tasks = eval_dict.keys()
     num_tasks = len(tasks)
     mtl_performance = 0.0

@@ -1,3 +1,11 @@
+# --------------------------------------------------------
+# MTLoRA
+# GitHub: https://github.com/scale-lab/MTLoRA
+# Copyright (c) 2024 SCALE Lab, Brown University
+# Licensed under the MIT License (see LICENSE for details).
+# --------------------------------------------------------
+
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -9,7 +17,8 @@ def get_head(task, backbone_channels, num_outputs, config=None, multiscale=True)
     head_type = config.MODEL.DECODER_HEAD.get(task, "hrnet")
 
     if head_type == "hrnet":
-        print(f"Using hrnet for task {task} with backbone channels {backbone_channels}")
+        print(
+            f"Using hrnet for task {task} with backbone channels {backbone_channels}")
         from models.seg_hrnet import HighResolutionHead
 
         return HighResolutionHead(backbone_channels, num_outputs)
@@ -83,10 +92,14 @@ class Downsampler(nn.Module):
         self.input_res = input_res
         self.enabled = enabled
         if self.enabled:
-            self.downsample_0 = torch.nn.Conv2d(dims[0], channels[0], 1, bias=bias)
-            self.downsample_1 = torch.nn.Conv2d(dims[1], channels[1], 1, bias=bias)
-            self.downsample_2 = torch.nn.Conv2d(dims[2], channels[2], 1, bias=bias)
-            self.downsample_3 = torch.nn.Conv2d(dims[3], channels[3], 1, bias=bias)
+            self.downsample_0 = torch.nn.Conv2d(
+                dims[0], channels[0], 1, bias=bias)
+            self.downsample_1 = torch.nn.Conv2d(
+                dims[1], channels[1], 1, bias=bias)
+            self.downsample_2 = torch.nn.Conv2d(
+                dims[2], channels[2], 1, bias=bias)
+            self.downsample_3 = torch.nn.Conv2d(
+                dims[3], channels[3], 1, bias=bias)
 
     def forward(self, x):
         s_3 = (
@@ -138,7 +151,8 @@ class MultiTaskSwin(nn.Module):
                 for i in range(num_layers)
             ]
             self.input_res = [
-                patches_resolution[0] // (2 ** ((i + 1) if i < num_layers - 1 else i))
+                patches_resolution[0] // (2 **
+                                          ((i + 1) if i < num_layers - 1 else i))
                 for i in range(num_layers)
             ]
             self.window_size = self.backbone.layers[0].blocks[0].window_size
@@ -225,7 +239,8 @@ class MultiTaskSwin(nn.Module):
                 }
             else:
                 shared_representation = self.downsampler(shared_representation)
-                shared_ft = {task: shared_representation for task in self.tasks}
+                shared_ft = {
+                    task: shared_representation for task in self.tasks}
 
         result = self.decoders(shared_ft)
         return result

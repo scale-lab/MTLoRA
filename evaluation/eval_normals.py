@@ -1,3 +1,11 @@
+# --------------------------------------------------------
+# MTLoRA
+# GitHub: https://github.com/scale-lab/MTLoRA
+# Copyright (c) 2024 SCALE Lab, Brown University
+# Licensed under the MIT License (see LICENSE for details).
+# --------------------------------------------------------
+
+
 import torch
 
 from evaluation.eval_normals_v1 import NormalsMeterV1

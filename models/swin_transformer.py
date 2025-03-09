@@ -1,9 +1,18 @@
 # --------------------------------------------------------
-# Swin Transformer
+# MTLoRA
+# GitHub: https://github.com/scale-lab/MTLoRA
+# Built upon Swin Transformer (https://github.com/microsoft/Swin-Transformer)
+#
+# Original file:
 # Copyright (c) 2021 Microsoft
-# Licensed under The MIT License [see LICENSE for details]
+# Licensed under the MIT License
 # Written by Ze Liu
+#
+# Modifications:
+# Copyright (c) 2024 SCALE Lab, Brown University
+# Licensed under the MIT License (see LICENSE for details)
 # --------------------------------------------------------
+
 
 import torch
 import torch.nn as nn
@@ -103,7 +112,8 @@ class WindowAttention(nn.Module):
 
         # define a parameter table of relative position bias
         self.relative_position_bias_table = nn.Parameter(
-            torch.zeros((2 * window_size[0] - 1) * (2 * window_size[1] - 1), num_heads))  # 2*Wh-1 * 2*Ww-1, nH
+            # 2*Wh-1 * 2*Ww-1, nH
+            torch.zeros((2 * window_size[0] - 1) * (2 * window_size[1] - 1), num_heads))
 
         # get pair-wise relative position index for each token inside the window
         coords_h = torch.arange(self.window_size[0])
@@ -146,7 +156,8 @@ class WindowAttention(nn.Module):
         attn = (q @ k.transpose(-2, -1))
 
         relative_position_bias = self.relative_position_bias_table[self.relative_position_index.view(-1)].view(
-            self.window_size[0] * self.window_size[1], self.window_size[0] * self.window_size[1], -1)  # Wh*Ww,Wh*Ww,nH
+            # Wh*Ww,Wh*Ww,nH
+            self.window_size[0] * self.window_size[1], self.window_size[0] * self.window_size[1], -1)
         relative_position_bias = relative_position_bias.permute(
             2, 0, 1).contiguous()  # nH, Wh*Ww, Wh*Ww
         attn = attn + relative_position_bias.unsqueeze(0)
@@ -323,7 +334,7 @@ class SwinTransformerBlock(nn.Module):
 
     def extra_repr(self) -> str:
         return f"dim={self.dim}, input_resolution={self.input_resolution}, num_heads={self.num_heads}, " \
-               f"window_size={self.window_size}, shift_size={self.shift_size}, mlp_ratio={self.mlp_ratio}"
+            f"window_size={self.window_size}, shift_size={self.shift_size}, mlp_ratio={self.mlp_ratio}"
 
     def flops(self):
         flops = 0
@@ -577,7 +588,8 @@ class SwinTransformer(nn.Module):
 
         # stochastic depth
         dpr = [x.item() for x in torch.linspace(0, drop_path_rate,
-                                                sum(depths))]  # stochastic depth decay rule
+                                                # stochastic depth decay rule
+                                                sum(depths))]
 
         # build layers
         self.layers = nn.ModuleList()

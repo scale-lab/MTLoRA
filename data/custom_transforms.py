@@ -1,11 +1,17 @@
-# This code is referenced from 
-# https://github.com/facebookresearch/astmt/
-# 
+# --------------------------------------------------------
+# MTLoRA
+# GitHub: https://github.com/scale-lab/MTLoRA
+#
+# Original file:
+# License: Attribution-NonCommercial 4.0 International (https://github.com/facebookresearch/astmt/)
 # Copyright (c) Facebook, Inc. and its affiliates.
-# All rights reserved.
-# 
-# License: Attribution-NonCommercial 4.0 International
-    
+#
+# Modifications:
+# Copyright (c) 2024 SCALE Lab, Brown University
+# Licensed under the MIT License (see LICENSE for details)
+# --------------------------------------------------------
+
+
 import numpy.random as random
 import numpy as np
 import torch
@@ -24,6 +30,7 @@ class ScaleNRotate(object):
         2.  rots [list]: list of fixed possible rotation angles
             scales [list]: list of fixed possible scales
     """
+
     def __init__(self, rots=(-30, 30), scales=(.75, 1.25), semseg=False, flagvals=None):
         assert (isinstance(rots, type(scales)))
         self.rots = rots
@@ -52,7 +59,7 @@ class ScaleNRotate(object):
 
             h, w = tmp.shape[:2]
             center = (w / 2, h / 2)
-            assert(center != 0)  # Strange behaviour warpAffine
+            assert (center != 0)  # Strange behaviour warpAffine
             M = cv2.getRotationMatrix2D(center, rot, sc)
             if self.flagvals is None:
                 if ((tmp == 0) | (tmp == 1)).all():
@@ -68,7 +75,7 @@ class ScaleNRotate(object):
                 # Rotate Normals properly
                 in_plane = np.arctan2(tmp[:, :, 0], tmp[:, :, 1])
                 nrm_0 = np.sqrt(tmp[:, :, 0] ** 2 + tmp[:, :, 1] ** 2)
-                rot_rad= rot * 2 * math.pi / 360
+                rot_rad = rot * 2 * math.pi / 360
                 tmp[:, :, 0] = np.sin(in_plane + rot_rad) * nrm_0
                 tmp[:, :, 1] = np.cos(in_plane + rot_rad) * nrm_0
             tmp = cv2.warpAffine(tmp, M, (w, h), flags=flagval)
@@ -89,11 +96,12 @@ class FixedResize(object):
     Args:
         resolutions (dict): the list of resolutions
     """
+
     def __init__(self, resolutions=None, flagvals=None):
         self.resolutions = resolutions
         self.flagvals = flagvals
         if self.flagvals is not None:
-            assert(len(self.resolutions) == len(self.flagvals))
+            assert (len(self.resolutions) == len(self.flagvals))
 
     def __call__(self, sample):
 
@@ -111,26 +119,35 @@ class FixedResize(object):
                     continue
                 if isinstance(sample[elem], list):
                     if sample[elem][0].ndim == 3:
-                        output_size = np.append(self.resolutions[elem], [3, len(sample[elem])])
+                        output_size = np.append(self.resolutions[elem], [
+                                                3, len(sample[elem])])
                     else:
-                        output_size = np.append(self.resolutions[elem], len(sample[elem]))
+                        output_size = np.append(
+                            self.resolutions[elem], len(sample[elem]))
                     tmp = sample[elem]
                     sample[elem] = np.zeros(output_size, dtype=float)
                     for ii, crop in enumerate(tmp):
                         if self.flagvals is None:
-                            sample[elem][..., ii] = helpers.fixed_resize(crop, self.resolutions[elem])
+                            sample[elem][..., ii] = helpers.fixed_resize(
+                                crop, self.resolutions[elem])
                         else:
-                            sample[elem][..., ii] = helpers.fixed_resize(crop, self.resolutions[elem], flagval=self.flagvals[elem])
+                            sample[elem][..., ii] = helpers.fixed_resize(
+                                crop, self.resolutions[elem], flagval=self.flagvals[elem])
                 else:
                     if self.flagvals is None:
-                        sample[elem] = helpers.fixed_resize(sample[elem], self.resolutions[elem])
+                        sample[elem] = helpers.fixed_resize(
+                            sample[elem], self.resolutions[elem])
                     else:
-                        sample[elem] = helpers.fixed_resize(sample[elem], self.resolutions[elem], flagval=self.flagvals[elem])
+                        sample[elem] = helpers.fixed_resize(
+                            sample[elem], self.resolutions[elem], flagval=self.flagvals[elem])
 
                     if elem == 'normals':
-                        N1, N2, N3 = sample[elem][:, :, 0], sample[elem][:, :, 1], sample[elem][:, :, 2]
-                        Nn = np.sqrt(N1 ** 2 + N2 ** 2 + N3 ** 2) + np.finfo(float).eps
-                        sample[elem][:, :, 0], sample[elem][:, :, 1], sample[elem][:, :, 2] = N1/Nn, N2/Nn, N3/Nn
+                        N1, N2, N3 = sample[elem][:, :,
+                                                  0], sample[elem][:, :, 1], sample[elem][:, :, 2]
+                        Nn = np.sqrt(N1 ** 2 + N2 ** 2 + N3 **
+                                     2) + np.finfo(float).eps
+                        sample[elem][:, :, 0], sample[elem][:, :,
+                                                            1], sample[elem][:, :, 2] = N1/Nn, N2/Nn, N3/Nn
             else:
                 del sample[elem]
 
@@ -145,6 +162,7 @@ class FixedResizeRatio(object):
     Args:
         scales (float): the scale
     """
+
     def __init__(self, scale=None, flagvals=None):
         self.scale = scale
         self.flagvals = flagvals
@@ -160,7 +178,8 @@ class FixedResizeRatio(object):
                     continue
 
                 tmp = sample[elem]
-                tmp = cv2.resize(tmp, None, fx=self.scale, fy=self.scale, interpolation=self.flagvals[elem])
+                tmp = cv2.resize(tmp, None, fx=self.scale,
+                                 fy=self.scale, interpolation=self.flagvals[elem])
 
                 sample[elem] = tmp
 
@@ -197,6 +216,7 @@ class NormalizeImage(object):
     """
     Return the given elements between 0 and 1
     """
+
     def __init__(self, norm_elem='image', clip=False):
         self.norm_elem = norm_elem
         self.clip = clip
@@ -208,7 +228,8 @@ class NormalizeImage(object):
                     sample[elem] /= 255.0
         else:
             if self.clip:
-                sample[self.norm_elem] = np.clip(sample[self.norm_elem], 0, 255)
+                sample[self.norm_elem] = np.clip(
+                    sample[self.norm_elem], 0, 255)
             if np.max(sample[self.norm_elem]) > 1:
                 sample[self.norm_elem] /= 255.0
         return sample
@@ -221,6 +242,7 @@ class ToImage(object):
     """
     Return the given elements between 0 and 255
     """
+
     def __init__(self, norm_elem='image', custom_max=255.):
         self.norm_elem = norm_elem
         self.custom_max = custom_max
@@ -229,10 +251,12 @@ class ToImage(object):
         if isinstance(self.norm_elem, tuple):
             for elem in self.norm_elem:
                 tmp = sample[elem]
-                sample[elem] = self.custom_max * (tmp - tmp.min()) / (tmp.max() - tmp.min() + 1e-10)
+                sample[elem] = self.custom_max * \
+                    (tmp - tmp.min()) / (tmp.max() - tmp.min() + 1e-10)
         else:
             tmp = sample[self.norm_elem]
-            sample[self.norm_elem] = self.custom_max * (tmp - tmp.min()) / (tmp.max() - tmp.min() + 1e-10)
+            sample[self.norm_elem] = self.custom_max * \
+                (tmp - tmp.min()) / (tmp.max() - tmp.min() + 1e-10)
         return sample
 
     def __str__(self):
@@ -249,7 +273,8 @@ class AddIgnoreRegions(object):
 
             if elem == 'normals':
                 # Check areas with norm 0
-                Nn = np.sqrt(tmp[:, :, 0] ** 2 + tmp[:, :, 1] ** 2 + tmp[:, :, 2] ** 2)
+                Nn = np.sqrt(tmp[:, :, 0] ** 2 + tmp[:, :, 1]
+                             ** 2 + tmp[:, :, 2] ** 2)
 
                 tmp[Nn == 0, :] = 255.
                 sample[elem] = tmp
@@ -272,6 +297,7 @@ class AddIgnoreRegions(object):
 
 class ToTensor(object):
     """Convert ndarrays in sample to Tensors."""
+
     def __init__(self):
         self.to_tensor = torchvision.transforms.ToTensor()
 
@@ -289,12 +315,13 @@ class ToTensor(object):
 
             if tmp.ndim == 2:
                 tmp = tmp[:, :, np.newaxis]
-            
+
             if elem == 'image':
-                sample[elem] = self.to_tensor(tmp.astype(np.uint8)) # Between 0 .. 255 so cast as uint8 to ensure compatible w/ imagenet weight
-            
+                # Between 0 .. 255 so cast as uint8 to ensure compatible w/ imagenet weight
+                sample[elem] = self.to_tensor(tmp.astype(np.uint8))
+
             else:
-                tmp = tmp.transpose((2,0,1))
+                tmp = tmp.transpose((2, 0, 1))
                 sample[elem] = torch.from_numpy(tmp.astype(float))
 
         return sample
@@ -310,8 +337,8 @@ class Normalize(object):
         self.normalize = torchvision.transforms.Normalize(self.mean, self.std)
 
     def __call__(self, sample):
-        sample['image'] = self.normalize(sample['image'])    
+        sample['image'] = self.normalize(sample['image'])
         return sample
 
     def __str__(self):
-        return 'Normalize([%.3f,%.3f,%.3f],[%.3f,%.3f,%.3f])' %(self.mean[0], self.mean[1], self.mean[2], self.std[0], self.std[1], self.std[2])
+        return 'Normalize([%.3f,%.3f,%.3f],[%.3f,%.3f,%.3f])' % (self.mean[0], self.mean[1], self.mean[2], self.std[0], self.std[1], self.std[2])

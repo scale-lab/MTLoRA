@@ -1,6 +1,16 @@
+# --------------------------------------------------------
+# MTLoRA
+# GitHub: https://github.com/scale-lab/MTLoRA
 #
-# Authors: Simon Vandenhende
+# Original file:
 # Licensed under the CC BY-NC 4.0 license (https://creativecommons.org/licenses/by-nc/4.0/)
+# Written by Simon Vandenhende
+#
+# Modifications:
+# Copyright (c) 2024 SCALE Lab, Brown University
+# Licensed under the MIT License (see LICENSE for details)
+# --------------------------------------------------------
+
 
 import torch
 import torch.nn as nn

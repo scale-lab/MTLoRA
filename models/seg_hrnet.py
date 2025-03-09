@@ -1,9 +1,23 @@
 # ------------------------------------------------------------------------------
-# Copyright (c) Microsoft
-# Licensed under the MIT License.
+
 # Written by Ke Sun (sunk@mail.ustc.edu.cn)
 # Minor changes made by Simon Vandenhende
 # ------------------------------------------------------------------------------
+
+# --------------------------------------------------------
+# MTLoRA
+# GitHub: https://github.com/scale-lab/MTLoRA
+#
+# Original file:
+# Copyright (c) Microsoft
+# Licensed under the MIT License.
+# Written by Ke Sun(sunk@mail.ustc.edu.cn)
+# Minor changes made by Simon Vandenhende
+#
+# Modifications:
+# Copyright (c) 2024 SCALE Lab, Brown University
+# Licensed under the MIT License (see LICENSE for details)
+# --------------------------------------------------------
 
 from __future__ import absolute_import
 from __future__ import division

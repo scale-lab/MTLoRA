@@ -1,21 +1,25 @@
-# This code is referenced from
-# https://github.com/facebookresearch/astmt/
+# --------------------------------------------------------
+# MTLoRA
+# GitHub: https://github.com/scale-lab/MTLoRA
 #
+# Original file:
+# License: Attribution-NonCommercial 4.0 International (https://github.com/facebookresearch/astmt/)
 # Copyright (c) Facebook, Inc. and its affiliates.
-# All rights reserved.
 #
-# License: Attribution-NonCommercial 4.0 International
+# Modifications:
+# Copyright (c) 2024 SCALE Lab, Brown University
+# Licensed under the MIT License (see LICENSE for details)
 
 import numpy as np
 
 
 def jaccard(gt, pred, void_pixels=None):
 
-    assert(gt.shape == pred.shape)
+    assert (gt.shape == pred.shape)
 
     if void_pixels is None:
         void_pixels = np.zeros_like(gt)
-    assert(void_pixels.shape == gt.shape)
+    assert (void_pixels.shape == gt.shape)
 
     gt = gt.astype(bool)
     pred = pred.astype(bool)

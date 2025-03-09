@@ -1,8 +1,16 @@
-# Derived from https://github.com/microsoft/LoRA
-#  ------------------------------------------------------------------------------------------
-#  Copyright (c) Microsoft Corporation. All rights reserved.
-#  Licensed under the MIT License (MIT). See LICENSE in the repo root for license information.
-#  ------------------------------------------------------------------------------------------
+# --------------------------------------------------------
+# MTLoRA
+# GitHub: https://github.com/scale-lab/MTLoRA
+# Built upon Microsoft LoRA (https://github.com/microsoft/LoRA)
+#
+# Original file:
+# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License
+#
+# Adapted file:
+# Copyright (c) 2024 SCALE Lab, Brown University
+# Licensed under the MIT License (see LICENSE for details)
+# --------------------------------------------------------
 
 r"""
     Low Ranking Adaptation for LLMs scheme.

@@ -1,10 +1,14 @@
-# This code is referenced from 
-# https://github.com/facebookresearch/astmt/
-# 
+# --------------------------------------------------------
+# MTLoRA
+# GitHub: https://github.com/scale-lab/MTLoRA
+#
+# Original file:
+# License: Attribution-NonCommercial 4.0 International (https://github.com/facebookresearch/astmt/)
 # Copyright (c) Facebook, Inc. and its affiliates.
-# All rights reserved.
-# 
-# License: Attribution-NonCommercial 4.0 International
+#
+# Modifications:
+# Copyright (c) 2024 SCALE Lab, Brown University
+# Licensed under the MIT License (see LICENSE for details)
 
 import warnings
 import cv2
@@ -31,18 +35,21 @@ def eval_depth(loader, folder):
         filename = os.path.join(folder, sample['meta']['image'] + '.mat')
         pred = sio.loadmat(filename)['depth'].astype(float)
         label = sample['depth']
-        
+
         if pred.shape != label.shape:
-            warnings.warn('Prediction and ground truth have different size. Resizing Prediction..')
-            pred = cv2.resize(pred, label.shape[::-1], interpolation=cv2.INTER_LINEAR)
+            warnings.warn(
+                'Prediction and ground truth have different size. Resizing Prediction..')
+            pred = cv2.resize(
+                pred, label.shape[::-1], interpolation=cv2.INTER_LINEAR)
 
         valid_mask = (label != 0)
         n_valid += np.sum(valid_mask)
 
-        label[label == 0] = 1e-9 # Avoid overflow/underflow
+        label[label == 0] = 1e-9  # Avoid overflow/underflow
         pred[pred <= 0] = 1e-9
 
-        log_rmse_tmp = (np.log(label[valid_mask]) - np.log(pred[valid_mask])) ** 2
+        log_rmse_tmp = (np.log(label[valid_mask]) -
+                        np.log(pred[valid_mask])) ** 2
         total_log_rmses += np.sum(log_rmse_tmp)
 
         rmse_tmp = (label[valid_mask] - pred[valid_mask]) ** 2
@@ -64,11 +71,11 @@ class DepthMeter(object):
     @torch.no_grad()
     def update(self, pred, gt):
         pred, gt = pred.squeeze(), gt.squeeze()
-        
+
         # Determine valid mask
         mask = (gt != 255).bool()
-        self.n_valid += mask.float().sum().item() # Valid pixels per image
-        
+        self.n_valid += mask.float().sum().item()  # Valid pixels per image
+
         # Only positive depth values are possible
         pred = torch.clamp(pred, min=1e-9)
 
@@ -84,7 +91,7 @@ class DepthMeter(object):
     def reset(self):
         self.rmses = []
         self.log_rmses = []
-        
+
     def get_score(self, verbose=True):
         eval_result = dict()
         eval_result['rmse'] = np.sqrt(self.total_rmses / self.n_valid)
@@ -99,16 +106,16 @@ class DepthMeter(object):
                 print('{0:s}{1:s}{2:.4f}'.format(x, spaces, eval_result[x]))
 
         return eval_result
-        
+
 
 def eval_depth_predictions(database, save_dir, overfit=False):
 
     # Dataloaders
     if database == 'NYUD':
-        from data.nyud import NYUD_MT 
+        from data.nyud import NYUD_MT
         gt_set = 'val'
         db = NYUD_MT(split=gt_set, do_depth=True, overfit=overfit)
-    
+
     else:
         raise NotImplementedError
 

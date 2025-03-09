@@ -1,3 +1,10 @@
+# --------------------------------------------------------
+# MTLoRA
+# GitHub: https://github.com/scale-lab/MTLoRA
+# Copyright (c) 2024 SCALE Lab, Brown University
+# Licensed under the MIT License (see LICENSE for details).
+# --------------------------------------------------------
+
 
 import torch
 import torch.nn as nn
@@ -6,7 +13,8 @@ import torch.nn.functional as F
 
 from mmcv.cnn import build_conv_layer, build_norm_layer, build_upsample_layer
 from mmengine.model import constant_init, normal_init
- 
+
+
 class Decoder(nn.Module):
     def __init__(self, in_channels, out_channels, args):
         super().__init__()

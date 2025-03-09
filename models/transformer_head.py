@@ -31,7 +31,7 @@ class SwinDecoderHead(SwinTransformer):
     def forward_features(self, x, return_stages=False, flatten_ft=True):
         return_stages = False
         flatten_ft = True
-        
+
         x0_h, x0_w = x[0].size(2), x[0].size(3)
         x1 = F.interpolate(x[1], (x0_h, x0_w), mode='bilinear')
         x2 = F.interpolate(x[2], (x0_h, x0_w), mode='bilinear')
@@ -50,6 +50,3 @@ class SwinDecoderHead(SwinTransformer):
             if return_stages:
                 out.append(x)
         return x
-
-# ([4, 3, 224, 224])
-# ([4, 270, 28, 28])
