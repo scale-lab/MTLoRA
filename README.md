@@ -45,6 +45,17 @@ Since the release commit is squashed, the GitHub contributors tab doesn't reflec
 - [Ahmed Agiza](https://github.com/ahmed-agiza)
 - [Marina Neseem](https://github.com/marina-neseem)
 
+## FAQ
+
+### What are the hyperparameters to reproduce the results?
+You can use the same command in the README to reproduce the results with the same hyperparameters, you can also download the [pretrained model weights](https://drive.google.com/file/d/1AzzOgX6X0VFKyXUBXhwlgmba5NbPUq3m/view?usp=drive_link).
+
+### How to get PASCAL Context dataset?
+Here is a link to download [PASCAL dataset](https://data.vision.ee.ethz.ch/kmaninis/share/MTL/PASCAL_MT.tgz).
+
+### How to run "Pyramid Vision Transformer" backbone?
+You can download PVT from its [repository](https://github.com/whai362/PVT) and use it as the backbone instead of Swin. The experiments were conducted using the **PVT‑Small** variant.
+
 ## Citation
 If you find MTLoRA helpful in your research, please cite our paper:
 ```
